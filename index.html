@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>The Apothecary Ledger — Tincture Tracker</title>
+
+<!-- Home-screen app behavior (iOS "Add to Home Screen") -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Apothecary">
+<meta name="theme-color" content="#333f2b">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEqklEQVR4nO3dP07cQBTH8cFKj4TEKSjp0lCgNOmCUucUiEMgTsEBoKPjCDkJEhI3SLFiY7z+ecfj2fV7876fKpugzdrv6/F6/4iTH7+/p6re3z7q3iHynZ2fVry3bxXviyxWtxlBrUS6KveSKMOSWrOoEwdlWFNlIktPK2Rh1vJTzKKVgzLsWzKj8jgow4viSRXGQRm+lM2rJA7K8KhgarPjoAy/5s5uxtUKWTRg1iVM7spBGS3JnGZWHJTRnpyZ7o+DMlq1d7J74qCMtk3Pt9obb2jPVBwsGxFMTFnGQRlxqFmPx0EZ0YxOfCQOyohpd+7DOCgjssH0u4l/Q0D9BriUhfQ/DpYNbGxL6Aa3gfTZQ5coA2Pe3z54zgGpY9mAwsoBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIA1LNX8ZTy9110G9L3L/W/D1Ly5lbOcKWkextu604rO2d4zO1BwzFYWq/rMjOfrASh509YoGRvWElDhhEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCsxGHt3ep1GdkbVuJIZvbI6uzsB0NxJEv7ZS2m9oCtOJKxvXNk1rb95PLqYu3HsN/gLeyb279rPZIlnh4u+zetpbDLQRz9Mpxm0ddPxHgf5k4rA42Vkb5uhZEP9SjW49hqo4wNL9tiOg7jB1YVlrfRdBxbXg61fC62yEccWAVxQCIOSMQBiTggWfyW/Vq2r126uJQ4AlYOSMQBiTggRXzO8fPPr/7Nl8fn5T/ZpFhxDIbd/8vB4PN/smGBTiuj8x791/yfbFuUOOpONEgfUeJAgRBxHOJAj7B4hIgDZdqP43CHePOLR/txoBhxQGo8jkOv/G2fWRqPA0sQByTigEQckIgDEnFAIg5IxAGp8TgO/amttj8V1ngcWII4ILUfx+FW/rbPKSlCHCgWIo5DHOLNLxspSBwoEyWOugd6hGUjhfrG28vj88Rnc/rzvpn8FE+QMlKoONLnXHO+AZv/kw2LFcdG/oyj1TAQ5TkHChAHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKA5COOp4fLtR9CZS62yHQc96+naz+Eg7O8jabj6HNxqGXysi3W4+gfWF726bT+VlheNlJKJ5dXF2s/hv3urj/6N29u/671SJYYxG28jOQljrTTh3f2y0j2TytbLvZmJi/b4mbl2HK9hHjJYsNfHDgaN6cVHB9xQCIOSMQBqTs79/T8GcfEygGpSymxeGDX2flpt/3Tug8Fpmx66Aa3gW0JPOeA9CUOFg/0GxiuHPQR2WD6I6cV+ohpd+7jzznoI5rRicsnpPQRh5r11NUKfUQwMWUuZSHtiYPFo23T892/ctBHq/ZONuu0Qh/tyZlp7nMO+mhJ5jRn/EbqzT2+vzn+ZgBmHeSzr1ZYQvyaO7uSS1n68KhgaoWvc9CHL2XzKn8RjD68KJ7UoldI6cO+JTOacbUy8X9zCWPQ8kO3znsrLCHWVJlItTfe6MOOWrP4B+zJMstxYFMvAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAEqklEQVR4nO3dP07cQBTH8cFKj4TEKSjp0lCgNOmCUucUiEMgTsEBoKPjCDkJEhI3SLFiY7z+ecfj2fV7876fKpugzdrv6/F6/4iTH7+/p6re3z7q3iHynZ2fVry3bxXviyxWtxlBrUS6KveSKMOSWrOoEwdlWFNlIktPK2Rh1vJTzKKVgzLsWzKj8jgow4viSRXGQRm+lM2rJA7K8KhgarPjoAy/5s5uxtUKWTRg1iVM7spBGS3JnGZWHJTRnpyZ7o+DMlq1d7J74qCMtk3Pt9obb2jPVBwsGxFMTFnGQRlxqFmPx0EZ0YxOfCQOyohpd+7DOCgjssH0u4l/Q0D9BriUhfQ/DpYNbGxL6Aa3gfTZQ5coA2Pe3z54zgGpY9mAwsoBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCIA1LNX8ZTy9110G9L3L/W/D1Ly5lbOcKWkextu604rO2d4zO1BwzFYWq/rMjOfrASh509YoGRvWElDhhEHJCIAxJxQCIOSMQBiTggEQck4oBEHJCsxGHt3ep1GdkbVuJIZvbI6uzsB0NxJEv7ZS2m9oCtOJKxvXNk1rb95PLqYu3HsN/gLeyb279rPZIlnh4u+zetpbDLQRz9Mpxm0ddPxHgf5k4rA42Vkb5uhZEP9SjW49hqo4wNL9tiOg7jB1YVlrfRdBxbXg61fC62yEccWAVxQCIOSMQBiTggWfyW/Vq2r126uJQ4AlYOSMQBiTggRXzO8fPPr/7Nl8fn5T/ZpFhxDIbd/8vB4PN/smGBTiuj8x791/yfbFuUOOpONEgfUeJAgRBxHOJAj7B4hIgDZdqP43CHePOLR/txoBhxQGo8jkOv/G2fWRqPA0sQByTigEQckIgDEnFAIg5IxAGp8TgO/amttj8V1ngcWII4ILUfx+FW/rbPKSlCHCgWIo5DHOLNLxspSBwoEyWOugd6hGUjhfrG28vj88Rnc/rzvpn8FE+QMlKoONLnXHO+AZv/kw2LFcdG/oyj1TAQ5TkHChAHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKARByQiAMScUAiDkjEAYk4IBEHJOKA5COOp4fLtR9CZS62yHQc96+naz+Eg7O8jabj6HNxqGXysi3W4+gfWF726bT+VlheNlJKJ5dXF2s/hv3urj/6N29u/671SJYYxG28jOQljrTTh3f2y0j2TytbLvZmJi/b4mbl2HK9hHjJYsNfHDgaN6cVHB9xQCIOSMQBqTs79/T8GcfEygGpSymxeGDX2flpt/3Tug8Fpmx66Aa3gW0JPOeA9CUOFg/0GxiuHPQR2WD6I6cV+ohpd+7jzznoI5rRicsnpPQRh5r11NUKfUQwMWUuZSHtiYPFo23T892/ctBHq/ZONuu0Qh/tyZlp7nMO+mhJ5jRn/EbqzT2+vzn+ZgBmHeSzr1ZYQvyaO7uSS1n68KhgaoWvc9CHL2XzKn8RjD68KJ7UoldI6cO+JTOacbUy8X9zCWPQ8kO3znsrLCHWVJlItTfe6MOOWrP4B+zJMstxYFMvAAAAAElFTkSuQmCC">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f3e9d2;
+    --paper-dark:#e7d9b8;
+    --paper-darker:#dccca3;
+    --ink:#3b2f1f;
+    --ink-soft:#5a4c37;
+    --forest:#45543a;
+    --forest-dark:#333f2b;
+    --rust:#a0522d;
+    --rust-dark:#7c3f21;
+    --gold:#a9821c;
+    --cream:#fbf6e9;
+    --danger:#8b3a3a;
+    --shadow: 0 4px 14px rgba(59,47,31,0.18);
+    --radius: 10px;
+    font-size:16px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 40%),
+      radial-gradient(circle at 80% 60%, rgba(0,0,0,0.03), transparent 45%);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size:17px;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  h1,h2,h3,h4{ font-family:'Playfair Display', Georgia, serif; color:var(--forest-dark); margin:0 0 .3em; }
+  a{ color: var(--rust-dark); }
+  button, input, select, textarea{ font-family:inherit; font-size:1em; }
+  ::placeholder{ color:#9c8f77; font-style:italic; }
+
+  header.top{
+    background: linear-gradient(180deg, var(--forest-dark), var(--forest));
+    color: var(--cream);
+    padding: 18px 26px;
+    box-shadow: var(--shadow);
+    position: sticky; top:0; z-index: 50;
+  }
+  header.top .brand{ display:flex; align-items:center; gap:12px; }
+  header.top .brand .leaf{ font-size:1.6em; }
+  header.top h1{ color:var(--cream); font-size:1.5em; letter-spacing:.03em; margin:0; }
+  header.top .tagline{ font-size:.8em; color:#d9d0b3; font-style:italic; margin-top:2px;}
+  nav.tabs{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  nav.tabs button{
+    background: rgba(251,246,233,0.08);
+    border: 1px solid rgba(251,246,233,0.35);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 999px;
+    cursor:pointer;
+    letter-spacing:.02em;
+    transition: all .15s ease;
+  }
+  nav.tabs button:hover{ background: rgba(251,246,233,0.18); }
+  nav.tabs button.active{ background: var(--gold); border-color: var(--gold); color: var(--ink); font-weight:600; }
+
+  main{ max-width:1180px; margin:0 auto; padding: 26px 20px 80px; }
+  section{ display:none; }
+  section.active{ display:block; }
+
+  .toolbar{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:18px; }
+  .toolbar input[type=search]{
+    flex:1; min-width:220px; padding:10px 14px; border-radius:999px;
+    border:1px solid var(--paper-darker); background: var(--cream);
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:6px;
+    background: var(--rust); color:#fff; border:none; padding:10px 18px;
+    border-radius: 8px; cursor:pointer; box-shadow: var(--shadow);
+    font-weight:600; letter-spacing:.02em;
+    transition: transform .1s ease, background .15s ease;
+  }
+  .btn:hover{ background: var(--rust-dark); transform: translateY(-1px); }
+  .btn.secondary{ background: var(--forest); }
+  .btn.secondary:hover{ background: var(--forest-dark); }
+  .btn.ghost{ background: transparent; color: var(--ink); border:1px solid var(--paper-darker); box-shadow:none; }
+  .btn.ghost:hover{ background: var(--paper-dark); }
+  .btn.danger{ background: var(--danger); }
+  .btn.danger:hover{ background: #6f2c2c; }
+  .btn.small{ padding:6px 12px; font-size:.85em; }
+
+  .empty-state{ text-align:center; padding:60px 20px; color: var(--ink-soft); }
+  .empty-state .leaf{ font-size:3em; display:block; margin-bottom:10px; }
+
+  .grid-cards{ display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:18px; }
+  .card{
+    background: var(--cream); border:1px solid var(--paper-darker); border-radius: var(--radius);
+    overflow:hidden; box-shadow: var(--shadow); cursor:pointer; display:flex; flex-direction:column;
+    transition: transform .12s ease;
+  }
+  .card:hover{ transform: translateY(-3px); }
+  .card .thumb{ height:150px; background: var(--paper-dark); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .card .thumb img{ width:100%; height:100%; object-fit:cover; }
+  .card .thumb .placeholder{ font-size:2.4em; color: var(--gold); opacity:.6; }
+  .card .body{ padding:12px 14px 14px; flex:1; display:flex; flex-direction:column; gap:4px;}
+  .card .body h3{ font-size:1.15em; margin:0; }
+  .card .body .latin{ font-style:italic; color: var(--ink-soft); font-size:.88em; }
+  .card .body .meta{ font-size:.82em; color: var(--ink-soft); margin-top:4px; }
+  .card .body .benefits-preview{ font-size:.85em; margin-top:6px; color:var(--ink); }
+  .tag-row{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .tag{ background: var(--paper-dark); border-radius:999px; padding:2px 10px; font-size:.75em; color: var(--forest-dark); }
+
+  form .form-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 16px 20px; }
+  form .form-grid .full{ grid-column: 1 / -1; }
+  @media (max-width:720px){ form .form-grid{ grid-template-columns: 1fr; } }
+  fieldset{ border:1px solid var(--paper-darker); border-radius: var(--radius); padding:16px 18px 18px; margin: 0 0 20px; background: rgba(255,255,255,0.35); }
+  legend{ font-family:'Playfair Display', serif; padding:0 8px; color: var(--forest-dark); font-weight:600; }
+  label{ display:block; font-weight:600; margin-bottom:5px; color: var(--ink-soft); font-size:.92em; }
+  input[type=text], input[type=date], input[type=number], select, textarea{
+    width:100%; padding:9px 11px; border-radius:6px; border:1px solid var(--paper-darker);
+    background: var(--cream); color: var(--ink);
+  }
+  textarea{ resize: vertical; min-height:70px; }
+  .hint{ font-size:.78em; color:#8a7c62; margin-top:3px; }
+  .form-actions{ display:flex; gap:10px; margin-top:10px; }
+
+  .image-drop{
+    border:2px dashed var(--paper-darker); border-radius: var(--radius); padding:18px; text-align:center;
+    background: var(--cream); cursor:pointer;
+  }
+  .image-drop.dragover{ background: var(--paper-dark); }
+  .image-thumbs{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  .image-thumbs .thumb-wrap{ position:relative; width:90px; height:90px; border-radius:8px; overflow:hidden; border:1px solid var(--paper-darker); }
+  .image-thumbs img{ width:100%; height:100%; object-fit:cover; }
+  .image-thumbs .remove{
+    position:absolute; top:2px; right:2px; background: rgba(139,58,58,0.9); color:#fff; border:none;
+    border-radius:50%; width:20px; height:20px; cursor:pointer; font-size:.75em; line-height:1;
+  }
+
+  .modal-overlay{
+    display:none; position:fixed; inset:0; background: rgba(59,47,31,0.55); z-index:100;
+    align-items:flex-start; justify-content:center; padding: 40px 16px; overflow-y:auto;
+  }
+  .modal-overlay.active{ display:flex; }
+  .modal{
+    background: var(--cream); border-radius: var(--radius); max-width: 760px; width:100%;
+    padding: 26px 30px 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.35); position:relative;
+  }
+  .modal .close-x{
+    position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.4em; cursor:pointer; color: var(--ink-soft);
+  }
+  .modal-images{ display:flex; gap:10px; flex-wrap:wrap; margin: 10px 0 16px; }
+  .modal-images img{ width:110px; height:110px; object-fit:cover; border-radius:8px; border:1px solid var(--paper-darker); }
+  .detail-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin: 14px 0; }
+  .detail-grid .row{ font-size:.95em; }
+  .detail-grid .row b{ color: var(--forest-dark); }
+  .detail-block{ margin-top:14px; }
+  .detail-block h4{ margin-bottom:4px; font-size:1em; color: var(--rust-dark); }
+  .contra-box{ background: #f6e6e0; border:1px solid #dbb3a6; border-radius:8px; padding:10px 14px; }
+  .modal-actions{ display:flex; gap:10px; margin-top:20px; }
+
+  .herb-lib-item{ padding:10px 12px; border-bottom:1px solid var(--paper-darker); cursor:pointer; }
+  .herb-lib-item:hover{ background: var(--paper-dark); }
+  .herb-lib-item .hn{ font-weight:700; color: var(--forest-dark); }
+  .herb-lib-item .hl{ font-style:italic; color: var(--ink-soft); font-size:.85em; margin-left:6px; }
+  .herb-lib-item .hb{ font-size:.85em; margin-top:2px; }
+
+  .blend-row{ display:flex; gap:8px; margin-bottom:8px; align-items:center; }
+  .blend-row input[type=text]{ margin:0; }
+  .blend-row .b-name{ flex:2; }
+  .blend-row .b-prop{ flex:1; }
+  .blend-row .b-remove{ background: var(--danger); color:#fff; border:none; border-radius:6px; width:32px; height:32px; flex-shrink:0; cursor:pointer; font-size:.9em; }
+  .blend-tag-list{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+
+  /* ---------- Label Maker ---------- */
+  .label-layout{ display:grid; grid-template-columns: 340px 1fr; gap:26px; align-items:start; }
+  @media (max-width:900px){ .label-layout{ grid-template-columns: 1fr; } }
+  .label-controls{ background: rgba(255,255,255,0.4); border:1px solid var(--paper-darker); border-radius: var(--radius); padding:18px; }
+  .label-controls h3{ margin-top:0; }
+  .shape-choice{ display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .shape-choice button{
+    flex:1; padding:10px 6px; border-radius:8px; border:1px solid var(--paper-darker); background: var(--cream);
+    cursor:pointer; font-size:.85em; text-align:center;
+  }
+  .shape-choice button.active{ background: var(--gold); color: var(--ink); border-color: var(--gold); font-weight:700; }
+  .field-toggles{ display:flex; flex-direction:column; gap:6px; margin: 10px 0 16px; }
+  .field-toggles label{ font-weight:400; display:flex; align-items:center; gap:8px; font-size:.9em; color: var(--ink); }
+
+  .label-preview-area{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  #labelPreviewWrap{ background: repeating-linear-gradient(45deg, #eee, #eee 10px, #e4e4e4 10px, #e4e4e4 20px); padding:30px; border-radius:12px; }
+
+  /* Label itself — rustic apothecary style */
+  .tlabel{
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'EB Garamond', Georgia, serif;
+    border: 2px solid var(--forest-dark);
+    box-shadow: inset 0 0 0 3px var(--gold), inset 0 0 0 5px var(--forest-dark);
+    position: relative;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding: 10px 12px; overflow:hidden;
+  }
+  .tlabel .ornament{ font-size:.8em; color: var(--gold); letter-spacing:.3em; margin-bottom:2px;}
+  .tlabel .name{ font-family:'Playfair Display', serif; font-weight:800; text-transform:uppercase; letter-spacing:.05em; line-height:1.1; }
+  .tlabel .latin{ font-style:italic; color: var(--forest-dark); }
+  .tlabel .divider{ width:60%; border-top:1px solid var(--gold); margin:5px 0; }
+  .tlabel .meta-line{ font-size:.72em; color: var(--ink-soft); }
+  .tlabel .dosage{ font-size:.72em; margin-top:3px; }
+  .tlabel .warning{ font-size:.62em; color: var(--danger); margin-top:4px; text-transform:uppercase; letter-spacing:.03em; }
+  .tlabel .plant-img{ width:34px; height:34px; border-radius:50%; object-fit:cover; border:1px solid var(--gold); margin-bottom:4px; }
+
+  .tlabel.shape-bottle{ width: 3in; height: 2in; border-radius:6px; }
+  .tlabel.shape-jarlid{ width: 2.2in; height: 2.2in; border-radius:50%; }
+  .tlabel.shape-jarfront{ width: 2.4in; height: 3.2in; border-radius:6px; }
+
+  #printSheet{ display:none; }
+  .copies-controls{ display:flex; align-items:center; gap:10px; }
+  .copies-controls input[type=number]{ width:80px; }
+
+  footer.app-footer{ text-align:center; padding: 30px 10px 50px; color: var(--ink-soft); font-size:.85em; }
+
+  @media print{
+    body *{ visibility:hidden; }
+    #printSheet, #printSheet *{ visibility:visible; }
+    #printSheet{
+      display:flex !important; flex-wrap:wrap; gap:14px; position:absolute; left:0; top:0;
+      padding: 20px;
+    }
+    header.top, .no-print{ display:none !important; }
+    @page{ margin: 0.4in; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand">
+    <span class="leaf">🌿</span>
+    <div>
+      <h1>The Apothecary Ledger</h1>
+      <div class="tagline">A keeper of tinctures, benefits &amp; botanical wisdom</div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-view="view-list" class="active">Apothecary Shelf</button>
+    <button data-view="view-form">New Tincture</button>
+    <button data-view="view-labels">Label Maker</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- LIST VIEW -->
+  <section id="view-list" class="active">
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="Search by name, plant part, or benefit…">
+      <button class="btn" id="addNewBtn">+ Add Tincture</button>
+    </div>
+    <div id="cardsContainer" class="grid-cards"></div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <span class="leaf">🫙</span>
+      <h3>Your shelf is empty</h3>
+      <p>Add your first tincture to begin your ledger.</p>
+    </div>
+  </section>
+
+  <!-- FORM VIEW -->
+  <section id="view-form">
+    <h2 id="formHeading">Add a New Tincture</h2>
+    <form id="tinctureForm">
+      <input type="hidden" id="editId">
+
+      <fieldset>
+        <legend>Identity</legend>
+        <div class="form-grid">
+          <div class="full">
+            <label for="f-name">Common Name *</label>
+            <input type="text" id="f-name" required list="herbNames" placeholder="e.g. Echinacea Root Tincture" autocomplete="off">
+            <datalist id="herbNames"></datalist>
+            <div style="display:flex; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+              <button type="button" class="btn small secondary" id="autofillBtn">🔍 Autofill from Reference Library</button>
+              <button type="button" class="btn small ghost" id="browseHerbsBtn">📖 Browse Reference Library</button>
+              <span class="hint" id="autofillStatus"></span>
+            </div>
+          </div>
+          <div>
+            <label for="f-latin">Botanical (Latin) Name</label>
+            <input type="text" id="f-latin" placeholder="e.g. Echinacea purpurea">
+          </div>
+          <div>
+            <label for="f-plantpart">Plant Part Used</label>
+            <input type="text" id="f-plantpart" placeholder="e.g. Root, Leaf, Flower">
+          </div>
+          <div>
+            <label for="f-batch">Batch Number</label>
+            <input type="text" id="f-batch" placeholder="e.g. 2026-B04">
+          </div>
+          <div class="full" style="margin-top:4px;">
+            <label style="display:flex; align-items:center; gap:8px; font-weight:600;">
+              <input type="checkbox" id="f-isblend" style="width:auto; margin:0;"> This is a blend / combination of multiple herbs
+            </label>
+            <div id="blendSection" style="display:none; margin-top:10px; border:1px solid var(--paper-darker); border-radius:8px; padding:12px 14px; background:rgba(255,255,255,0.4);">
+              <div id="blendRows"></div>
+              <button type="button" class="btn small ghost" id="addBlendRowBtn" style="margin-top:4px;">+ Add Herb to Blend</button>
+              <div style="margin-top:12px;">
+                <button type="button" class="btn small secondary" id="autofillBlendBtn">🔍 Autofill Combined Info from Reference Library</button>
+              </div>
+              <div class="hint" style="margin-top:6px;">List each herb in the blend with its proportion (e.g., "2 parts", "30%"). Autofill merges benefits and cautions from every component found in the reference library, labeled by herb.</div>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Dates &amp; Batch Tracking</legend>
+        <div class="form-grid">
+          <div>
+            <label for="f-datecreated">Date Started</label>
+            <input type="date" id="f-datecreated">
+          </div>
+          <div>
+            <label for="f-bottled">Bottling / Straining Date</label>
+            <input type="date" id="f-bottled">
+          </div>
+          <div>
+            <label for="f-expiration">Expiration Date</label>
+            <input type="date" id="f-expiration">
+          </div>
+          <div>
+            <label for="f-yield">Yield / Jar Count</label>
+            <input type="text" id="f-yield" placeholder="e.g. 12 oz — 8 jars">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Recipe &amp; Process</legend>
+        <div class="form-grid">
+          <div>
+            <label for="f-menstruum">Menstruum (Solvent)</label>
+            <input type="text" id="f-menstruum" placeholder="e.g. 80-proof vodka">
+          </div>
+          <div>
+            <label for="f-ratio">Plant : Liquid Ratio</label>
+            <input type="text" id="f-ratio" placeholder="e.g. 1:5">
+          </div>
+          <div>
+            <label for="f-method">Extraction Method</label>
+            <select id="f-method">
+              <option value="">— Select —</option>
+              <option>Folk Method</option>
+              <option>Weight-to-Volume</option>
+              <option>Percolation</option>
+              <option>Glycerite</option>
+              <option>Vinegar Extraction</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="f-steep">Steep Duration</label>
+            <input type="text" id="f-steep" placeholder="e.g. 6 weeks">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Dosage &amp; Usage</legend>
+        <div class="form-grid">
+          <div>
+            <label for="f-dosage">Suggested Dose</label>
+            <input type="text" id="f-dosage" placeholder="e.g. 20–30 drops">
+          </div>
+          <div>
+            <label for="f-frequency">Frequency</label>
+            <input type="text" id="f-frequency" placeholder="e.g. 2–3x daily">
+          </div>
+          <div class="full">
+            <label for="f-usemethod">Method of Use</label>
+            <input type="text" id="f-usemethod" placeholder="e.g. Sublingual, diluted in water, added to tea">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Benefits &amp; Safety</legend>
+        <div class="form-grid">
+          <div class="full">
+            <label for="f-benefits">Known Benefits <span class="hint">(one per line)</span></label>
+            <textarea id="f-benefits" placeholder="e.g.&#10;Supports immune response&#10;Traditionally used for colds"></textarea>
+          </div>
+          <div class="full">
+            <label for="f-contra">Known Contraindications / Cautions <span class="hint">(one per line)</span></label>
+            <textarea id="f-contra" placeholder="e.g.&#10;Avoid during pregnancy&#10;May interact with immunosuppressants"></textarea>
+            <div class="hint">Autofilled entries are general reference notes compiled from sources like NCCIH — not medical advice. Always verify against current sources and a healthcare provider, especially for interactions, pregnancy, or existing conditions.</div>
+          </div>
+          <div class="full">
+            <label for="f-storage">Storage Instructions</label>
+            <textarea id="f-storage" placeholder="e.g. Store in a cool, dark place. Use within 5 years."></textarea>
+          </div>
+          <div class="full">
+            <label for="f-notes">Additional Notes</label>
+            <textarea id="f-notes" placeholder="Anything else worth remembering…"></textarea>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Plant &amp; Bottle Photos</legend>
+        <div class="image-drop" id="imageDrop">
+          <div>📷 Click or drag photos here (plant, jar, finished tincture)</div>
+          <input type="file" id="f-images" accept="image/*" multiple style="display:none;">
+        </div>
+        <div class="image-thumbs" id="imageThumbs"></div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" class="btn">Save Tincture</button>
+        <button type="button" class="btn ghost" id="cancelFormBtn">Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- LABEL MAKER VIEW -->
+  <section id="view-labels">
+    <h2>Label Maker</h2>
+    <div class="label-layout">
+      <div class="label-controls no-print">
+        <h3>1. Choose a tincture</h3>
+        <select id="labelSourceSelect">
+          <option value="">— Custom / blank label —</option>
+        </select>
+
+        <h3 style="margin-top:18px;">2. Label shape</h3>
+        <div class="shape-choice">
+          <button type="button" data-shape="shape-bottle" class="active">Bottle<br><span style="font-weight:400;">3×2 in</span></button>
+          <button type="button" data-shape="shape-jarlid">Jar Lid<br><span style="font-weight:400;">2.2 in ⌀</span></button>
+          <button type="button" data-shape="shape-jarfront">Jar Front<br><span style="font-weight:400;">2.4×3.2 in</span></button>
+        </div>
+
+        <h3>3. Include on label</h3>
+        <div class="field-toggles">
+          <label><input type="checkbox" id="tg-latin" checked> Botanical name</label>
+          <label><input type="checkbox" id="tg-image"> Plant photo</label>
+          <label><input type="checkbox" id="tg-blend" checked> Blend ingredients</label>
+          <label><input type="checkbox" id="tg-date" checked> Date / batch</label>
+          <label><input type="checkbox" id="tg-ratio" checked> Menstruum &amp; ratio</label>
+          <label><input type="checkbox" id="tg-dosage" checked> Dosage</label>
+          <label><input type="checkbox" id="tg-warning" checked> Contraindication warning</label>
+        </div>
+
+        <h3>4. Custom text</h3>
+        <div class="form-grid" style="grid-template-columns:1fr;">
+          <div>
+            <label for="c-name">Name</label>
+            <input type="text" id="c-name" placeholder="Tincture name">
+          </div>
+          <div>
+            <label for="c-latin">Botanical name</label>
+            <input type="text" id="c-latin" placeholder="Latin name">
+          </div>
+          <div>
+            <label for="c-blendline">Blend ingredients line</label>
+            <input type="text" id="c-blendline" placeholder="e.g. Echinacea 2pt, Elderberry 1pt, Ginger 1pt">
+          </div>
+          <div>
+            <label for="c-dateline">Date / batch line</label>
+            <input type="text" id="c-dateline" placeholder="e.g. Made 03/2026 · Batch A2">
+          </div>
+          <div>
+            <label for="c-ratioline">Menstruum &amp; ratio line</label>
+            <input type="text" id="c-ratioline" placeholder="e.g. 80-proof vodka · 1:5">
+          </div>
+          <div>
+            <label for="c-dosageline">Dosage line</label>
+            <input type="text" id="c-dosageline" placeholder="e.g. 20–30 drops, 2–3x daily">
+          </div>
+          <div>
+            <label for="c-warningline">Warning line</label>
+            <input type="text" id="c-warningline" placeholder="e.g. Avoid during pregnancy">
+          </div>
+        </div>
+
+        <h3>5. Print</h3>
+        <div class="copies-controls">
+          <label style="margin:0;">Copies:</label>
+          <input type="number" id="copiesInput" value="6" min="1" max="60">
+          <button class="btn small" id="printLabelsBtn">🖨 Print Sheet</button>
+        </div>
+      </div>
+
+      <div class="label-preview-area">
+        <div id="labelPreviewWrap">
+          <div class="tlabel shape-bottle" id="labelPreview">
+            <div class="ornament">✦ ✦ ✦</div>
+            <div class="name" id="lp-name">Tincture Name</div>
+            <div class="latin" id="lp-latin">Botanical name</div>
+            <div class="meta-line" id="lp-blend">Blend ingredients</div>
+            <div class="divider"></div>
+            <div class="meta-line" id="lp-date">Made — · Batch —</div>
+            <div class="meta-line" id="lp-ratio">Menstruum · Ratio</div>
+            <div class="dosage" id="lp-dosage">Dosage</div>
+            <div class="warning" id="lp-warning"></div>
+          </div>
+        </div>
+        <p class="hint">Preview above is shown to scale at typical screen zoom. Actual printed size uses real inches.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailOverlay">
+  <div class="modal">
+    <button class="close-x" id="closeDetailBtn">✕</button>
+    <h2 id="d-name">Tincture Name</h2>
+    <div class="latin" id="d-latin" style="font-style:italic;color:#5a4c37;"></div>
+    <div class="modal-images" id="d-images"></div>
+    <div class="detail-block" id="d-blend-block" style="display:none;">
+      <h4>🧪 Blend Components</h4>
+      <div class="blend-tag-list" id="d-blend"></div>
+    </div>
+    <div class="detail-grid" id="d-grid"></div>
+    <div class="detail-block" id="d-benefits-block">
+      <h4>🌿 Known Benefits</h4>
+      <div id="d-benefits"></div>
+    </div>
+    <div class="detail-block" id="d-contra-block">
+      <h4>⚠ Contraindications &amp; Cautions</h4>
+      <div class="contra-box" id="d-contra"></div>
+    </div>
+    <div class="detail-block" id="d-storage-block">
+      <h4>📦 Storage</h4>
+      <div id="d-storage"></div>
+    </div>
+    <div class="detail-block" id="d-notes-block">
+      <h4>📝 Notes</h4>
+      <div id="d-notes"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn secondary" id="editDetailBtn">Edit</button>
+      <button class="btn ghost" id="labelFromDetailBtn">Make Label</button>
+      <button class="btn danger" id="deleteDetailBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Herb Reference Library Modal -->
+<div class="modal-overlay" id="herbLibraryOverlay">
+  <div class="modal">
+    <button class="close-x" id="closeHerbLibraryBtn">✕</button>
+    <h2>Herb Reference Library</h2>
+    <p class="hint">General reference notes compiled from NCCIH and clinical literature for common tincture herbs, plus any herbs you've added yourself. Educational information only — not medical advice. Click an herb to autofill its details into your form.</p>
+    <div style="display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap;">
+      <input type="search" id="herbLibrarySearch" placeholder="Search the reference library…" style="flex:1; min-width:200px; margin-bottom:0;">
+      <button type="button" class="btn small secondary" id="showAddHerbBtn">+ Add Herb to Library</button>
+    </div>
+
+    <div id="addHerbForm" style="display:none; border:1px solid var(--paper-darker); border-radius:8px; padding:14px 16px; margin-bottom:16px; background:rgba(255,255,255,0.5);">
+      <h3 style="margin-top:0;">Add a Herb to Your Library</h3>
+      <div class="form-grid">
+        <div>
+          <label for="nh-name">Common Name *</label>
+          <input type="text" id="nh-name" placeholder="e.g. Yellow Root">
+        </div>
+        <div>
+          <label for="nh-latin">Botanical (Latin) Name</label>
+          <input type="text" id="nh-latin" placeholder="e.g. Xanthorhiza simplicissima">
+        </div>
+        <div>
+          <label for="nh-part">Plant Part Used</label>
+          <input type="text" id="nh-part" placeholder="e.g. Root">
+        </div>
+        <div>
+          <label for="nh-dosage">Typical Dosage</label>
+          <input type="text" id="nh-dosage" placeholder="e.g. 1–2 mL, 2x daily">
+        </div>
+        <div class="full">
+          <label for="nh-benefits">Benefits <span class="hint">(one per line)</span></label>
+          <textarea id="nh-benefits" placeholder="One benefit per line"></textarea>
+        </div>
+        <div class="full">
+          <label for="nh-contra">Contraindications / Cautions <span class="hint">(one per line)</span></label>
+          <textarea id="nh-contra" placeholder="One caution per line"></textarea>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="btn" id="saveNewHerbBtn">Save to Library</button>
+        <button type="button" class="btn ghost" id="cancelNewHerbBtn">Cancel</button>
+      </div>
+    </div>
+
+    <div id="herbLibraryList" style="max-height:50vh; overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- Hidden print sheet, populated dynamically -->
+<div id="printSheet"></div>
+
+<footer class="app-footer">Kept with care · data stays private on this device</footer>
+
+<script>
+(function(){
+  "use strict";
+  const STORAGE_KEY = "tinctureLedgerRecords_v1";
+  const CUSTOM_HERB_KEY = "tinctureLedgerCustomHerbs_v1";
+  let records = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  let customHerbs = JSON.parse(localStorage.getItem(CUSTOM_HERB_KEY) || "[]");
+  let pendingImages = []; // base64 strings for the form currently open
+  let currentDetailId = null;
+
+  function saveCustomHerbs(){ localStorage.setItem(CUSTOM_HERB_KEY, JSON.stringify(customHerbs)); }
+  function getAllHerbs(){ return HERB_DB.concat(customHerbs); }
+
+  // ---------- Herb Reference Library ----------
+  // General educational reference notes compiled from NCCIH (nccih.nih.gov) and
+  // clinical/pharmacology literature for commonly tinctured herbs. NOT medical advice —
+  // always verify against current sources and a qualified healthcare provider.
+  const HERB_DB = [
+    { name:"Echinacea", latin:"Echinacea purpurea", part:"Root, aerial parts", dosage:"1–2 mL (30–60 drops), up to 3x daily; typically limited to short courses",
+      benefits:["Traditionally used to support the immune response","Commonly used at the onset of colds/upper respiratory infections"],
+      contra:["Not recommended for more than 8 consecutive weeks — associated with potential liver stress with prolonged use","Avoid with anabolic steroids, amiodarone, or methotrexate","Use caution in autoimmune conditions due to immune-stimulating action","Avoid in known allergy to Asteraceae/ragweed family plants"] },
+    { name:"St. John's Wort", latin:"Hypericum perforatum", part:"Flowering tops", dosage:"1–2 mL, 2–3x daily",
+      benefits:["Traditionally used for mild to moderate low mood support","Used topically (infused oil) for minor wound and nerve pain support"],
+      contra:["High risk of drug interactions — induces liver enzymes (CYP450) and P-glycoprotein","Can weaken effects of many medicines including oral contraceptives, warfarin, digoxin, cyclosporine, and antiretrovirals","Do not combine with SSRIs/SNRIs or other serotonergic drugs — risk of serotonin syndrome","Avoid during pregnancy and breastfeeding","Can increase photosensitivity"] },
+    { name:"Ginkgo", latin:"Ginkgo biloba", part:"Leaf", dosage:"1–2 mL, 2x daily",
+      benefits:["Traditionally used to support circulation and cognitive function"],
+      contra:["Affects bleeding time — avoid with warfarin, other anticoagulants, or antiplatelet drugs","Avoid with decreased platelet counts or upcoming surgery","Discontinue at least 2 weeks before surgical procedures"] },
+    { name:"Valerian", latin:"Valeriana officinalis", part:"Root", dosage:"1–2 mL at bedtime",
+      benefits:["Traditionally used to support relaxation and sleep onset"],
+      contra:["Do not combine with barbiturates — may increase sedative effect","Use caution with other sedatives, benzodiazepines, or alcohol","May cause grogginess; avoid before driving","Discontinue before surgery/anesthesia"] },
+    { name:"Kava", latin:"Piper methysticum", part:"Root", dosage:"Use only short-term and under guidance; follow product-specific dosing",
+      benefits:["Traditionally used for stress and anxiety support"],
+      contra:["Linked to rare but serious, sometimes fatal, liver toxicity — avoid with any liver condition","Avoid with alcohol or other hepatotoxic substances","Do not combine with anticoagulants, antiplatelets, antipsychotics, or other sedating agents","Avoid in Parkinson's disease","Discontinue at least 2 weeks before surgery"] },
+    { name:"Black Cohosh", latin:"Actaea racemosa", part:"Root/rhizome", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used for menopausal symptom support (hot flashes)"],
+      contra:["Avoid during pregnancy and breastfeeding — historically used to stimulate uterine contractions","Rare but serious liver toxicity reported — avoid with existing liver disease and limit duration of use","Discontinue and seek care if signs of liver trouble (jaundice, dark urine, abdominal pain) occur"] },
+    { name:"Licorice Root", latin:"Glycyrrhiza glabra", part:"Root", dosage:"0.5–1 mL, 2–3x daily; short courses preferred",
+      benefits:["Traditionally used to soothe the digestive tract and support respiratory comfort"],
+      contra:["Long-term or high-dose use linked to elevated blood pressure and low potassium (hypokalemia)","Avoid with hypertension, heart disease, kidney disease, or when taking blood-pressure medication","Avoid in pregnancy","Consider deglycyrrhizinated (DGL) forms for extended use"] },
+    { name:"Elderberry", latin:"Sambucus nigra", part:"Berry (ripe, cooked)", dosage:"2.5–5 mL, up to 3–4x daily during acute use",
+      benefits:["Traditionally used for immune support during colds and flu"],
+      contra:["Avoid in autoimmune conditions (e.g., MS, rheumatoid arthritis, lupus) due to immune-stimulating action","Raw/unripe berries, leaves, bark, and stems are toxic — use only properly prepared ripe berries","Limited safety data in pregnancy — use caution"] },
+    { name:"Ashwagandha", latin:"Withania somnifera", part:"Root", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used as an adaptogen for stress support and energy"],
+      contra:["Contraindicated in pregnancy — historical uterotonic use","Avoid with hyperthyroidism/Graves' disease — may increase thyroid activity","Rare reports of liver injury, mostly at high doses — use caution with existing liver conditions","May interact with thyroid, sedative, or immunosuppressant medications"] },
+    { name:"Hawthorn", latin:"Crataegus spp.", part:"Leaf, flower, berry", dosage:"1–2 mL, 2–3x daily",
+      benefits:["Traditionally used to support cardiovascular and circulatory health"],
+      contra:["Use caution with digoxin — may interfere with digoxin blood test readings and amplify cardiac effects","Use caution with blood pressure or heart-rate medications","Avoid in pregnancy and breastfeeding without guidance","Discontinue 2 weeks before surgery"] },
+    { name:"Goldenseal", latin:"Hydrastis canadensis", part:"Root/rhizome", dosage:"0.5–1 mL, 2–3x daily; short courses only",
+      benefits:["Traditionally used for short-term digestive and mucous membrane support"],
+      contra:["Contraindicated in pregnancy — may stimulate uterine contractions","High risk of drug interactions — inhibits CYP2D6/CYP3A4 liver enzymes affecting many medications","Can reduce metformin levels and effectiveness","May increase levels of blood-pressure medications or cyclosporine","At-risk/endangered plant — source sustainably"] },
+    { name:"Chaste Tree (Vitex)", latin:"Vitex agnus-castus", part:"Berry", dosage:"1–2 mL, once daily",
+      benefits:["Traditionally used to support hormonal balance and PMS symptoms"],
+      contra:["May interfere with hormonal contraceptives — do not combine without provider guidance","Avoid during pregnancy","Avoid with hormone therapy or hormone-sensitive conditions unless approved by a provider"] },
+    { name:"Comfrey", latin:"Symphytum officinale", part:"Leaf, root (topical use only)", dosage:"External/topical preparations only",
+      benefits:["Traditionally used topically to support minor skin and bruise healing"],
+      contra:["Internal use is contraindicated — contains pyrrolizidine alkaloids linked to serious, potentially fatal liver toxicity","Not for use on broken skin, in pregnancy, breastfeeding, or in children","Limit topical use duration; avoid prolonged or extensive application"] },
+    { name:"Ginger", latin:"Zingiber officinale", part:"Rhizome", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease nausea and support digestion"],
+      contra:["Use caution with anticoagulant/antiplatelet medications — may increase bleeding risk","Use caution with gallstones","High doses may worsen heartburn"] },
+    { name:"Turmeric", latin:"Curcuma longa", part:"Rhizome", dosage:"1–2 mL, 2–3x daily",
+      benefits:["Traditionally used for its anti-inflammatory and digestive support properties"],
+      contra:["Use caution with anticoagulant/antiplatelet medications — may increase bleeding risk","Avoid with gallstones or bile duct obstruction","High doses may cause GI upset; use caution in iron-deficiency anemia"] },
+    { name:"Garlic", latin:"Allium sativum", part:"Bulb", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used to support cardiovascular health and immune function"],
+      contra:["Use caution with anticoagulant/antiplatelet medications and before surgery — increases bleeding risk","May interact with some HIV and blood-pressure medications","Can cause GI upset in sensitive individuals"] },
+    { name:"Milk Thistle", latin:"Silybum marianum", part:"Seed", dosage:"1–2 mL, 2–3x daily",
+      benefits:["Traditionally used to support liver health and detoxification"],
+      contra:["Generally well tolerated; use caution in known allergy to Asteraceae/ragweed family","May have mild estrogenic activity — use caution with hormone-sensitive conditions or pregnancy","May interact with some medications metabolized by the liver (CYP interactions)"] },
+    { name:"Peppermint", latin:"Mentha piperita", part:"Leaf", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease digestive discomfort and bloating"],
+      contra:["May worsen GERD/acid reflux and heartburn — relaxes the lower esophageal sphincter","Avoid in infants and young children (menthol can cause airway spasm)","Use caution with gallstones or gallbladder disease"] },
+    { name:"Chamomile", latin:"Matricaria chamomilla", part:"Flower", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used for relaxation, sleep support, and mild digestive upset"],
+      contra:["Avoid with known allergy to Asteraceae/ragweed, daisies, or chrysanthemums","May potentiate sedatives and anticoagulants (mild)","Use caution in early pregnancy"] },
+    { name:"Lemon Balm", latin:"Melissa officinalis", part:"Leaf", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease stress, mild anxiety, and support sleep"],
+      contra:["May interact with thyroid medications — has mild antithyroid activity in some studies","May potentiate sedative medications"] },
+    { name:"Passionflower", latin:"Passiflora incarnata", part:"Aerial parts", dosage:"1–2 mL, up to 3x daily or at bedtime",
+      benefits:["Traditionally used to ease anxiety and support sleep"],
+      contra:["May potentiate sedatives, benzodiazepines, and alcohol","Avoid in pregnancy","Discontinue before surgery/anesthesia"] },
+    { name:"Nettle", latin:"Urtica dioica", part:"Leaf", dosage:"1–3 mL, up to 3x daily",
+      benefits:["Traditionally used to support seasonal allergy comfort and as a nutritive tonic"],
+      contra:["May have mild diuretic and blood-pressure-lowering effects — use caution with diuretics or blood pressure medication","Use caution in pregnancy at high doses (fresh leaf can be uterine stimulant); dried/cooked preparations are more commonly considered safer traditionally"] },
+    { name:"Dandelion", latin:"Taraxacum officinale", part:"Root, leaf", dosage:"1–3 mL, up to 3x daily",
+      benefits:["Traditionally used to support digestion and as a mild diuretic"],
+      contra:["Avoid or use caution with bile duct obstruction or gallstones","Use caution with diuretics or lithium — may affect drug clearance","Avoid with known allergy to Asteraceae/ragweed family"] },
+    { name:"Calendula", latin:"Calendula officinalis", part:"Flower", dosage:"1–2 mL, up to 3x daily (also used topically)",
+      benefits:["Traditionally used to support skin healing (topical) and mild digestive comfort"],
+      contra:["Avoid with known allergy to Asteraceae/ragweed family","Limited safety data for internal use in pregnancy — use caution"] },
+    { name:"Yarrow", latin:"Achillea millefolium", part:"Aerial parts, flower", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to support minor wound care and to ease fevers"],
+      contra:["Avoid in pregnancy — traditionally regarded as a uterine stimulant/emmenagogue","Avoid with known allergy to Asteraceae/ragweed family","Use caution with anticoagulant medications"] },
+    { name:"Mullein", latin:"Verbascum thapsus", part:"Leaf, flower", dosage:"1–3 mL, up to 3x daily",
+      benefits:["Traditionally used to soothe respiratory irritation and coughs"],
+      contra:["Strain preparations well — fine leaf hairs can irritate the throat","Generally well tolerated; no major known interactions"] },
+    { name:"Plantain", latin:"Plantago major", part:"Leaf", dosage:"1–2 mL, up to 3x daily (also used topically)",
+      benefits:["Traditionally used to soothe skin irritation (topical) and mild respiratory or digestive support"],
+      contra:["Generally well tolerated; no major known interactions","Use caution in known allergy to related plant families"] },
+    { name:"Catnip", latin:"Nepeta cataria", part:"Aerial parts", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease mild digestive upset and support relaxation"],
+      contra:["Avoid in pregnancy — traditionally regarded as a uterine stimulant","May potentiate sedatives"] },
+    { name:"Oregano", latin:"Origanum vulgare", part:"Leaf", dosage:"0.5–1 mL, up to 3x daily; short courses",
+      benefits:["Traditionally used to support immune and digestive function"],
+      contra:["Avoid therapeutic doses in pregnancy","Use caution with anticoagulant medications and diabetes medications (may affect blood sugar)"] },
+    { name:"Motherwort", latin:"Leonurus cardiaca", part:"Aerial parts", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to support heart palpitation comfort and menstrual/menopausal symptoms"],
+      contra:["Avoid in pregnancy — traditionally regarded as a uterine stimulant","Use caution with anticoagulant medications or heart medications","May increase menstrual bleeding"] },
+    { name:"Skullcap", latin:"Scutellaria lateriflora", part:"Aerial parts", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease nervous tension and support sleep"],
+      contra:["May potentiate sedatives","Rare reports of liver concerns, sometimes linked to product adulteration — source from a reputable supplier","Avoid in pregnancy without guidance"] },
+    { name:"Astragalus", latin:"Astragalus membranaceus", part:"Root", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used as an adaptogen to support immune resilience"],
+      contra:["Avoid in autoimmune conditions due to immune-stimulating action","May interact with immunosuppressant medications","Use caution with diabetes or blood-pressure medications"] },
+    { name:"Rhodiola", latin:"Rhodiola rosea", part:"Root", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used as an adaptogen for stress, fatigue, and mental clarity"],
+      contra:["May be overstimulating for some — avoid late in the day","Use caution with bipolar disorder (may contribute to activation)","May interact with antidepressant or blood-pressure medications"] },
+    { name:"Holy Basil (Tulsi)", latin:"Ocimum tenuiflorum", part:"Leaf", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used as an adaptogen to support stress resilience and blood sugar balance"],
+      contra:["Use caution with anticoagulant medications — mild blood-thinning effect","May lower blood sugar — use caution with diabetes medications","Use caution when trying to conceive; limited pregnancy safety data"] },
+    { name:"Cascara Sagrada", latin:"Frangula purshiana / Rhamnus purshiana", part:"Aged bark", dosage:"Low dose, short-term use only; follow product-specific dosing",
+      benefits:["Traditionally used as a short-term stimulant laxative"],
+      contra:["Not for long-term use — can cause laxative dependency and electrolyte imbalance","Avoid in pregnancy, breastfeeding, and with intestinal obstruction/inflammatory bowel disease","Bark must be aged at least one year before use; fresh bark is more strongly purgative"] },
+    { name:"Uva Ursi", latin:"Arctostaphylos uva-ursi", part:"Leaf", dosage:"Short-term use only (generally under 1–2 weeks); follow product-specific dosing",
+      benefits:["Traditionally used short-term for urinary tract comfort"],
+      contra:["Not for long-term use — hydroquinone constituents linked to liver and potential carcinogenic concern with prolonged use","Avoid in pregnancy, breastfeeding, and in children","Avoid with kidney disease"] },
+    { name:"Devil's Claw", latin:"Harpagophytum procumbens", part:"Root/tuber", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease joint discomfort and support digestion"],
+      contra:["Avoid with gallstones or peptic ulcers — may increase stomach acid","Use caution with anticoagulant, diabetes, or blood-pressure medications","Avoid in pregnancy"] },
+    { name:"Saw Palmetto", latin:"Serenoa repens", part:"Berry", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used to support prostate and urinary comfort"],
+      contra:["Use caution with hormone-sensitive conditions — mild hormonal activity","Use caution with anticoagulant medications and before surgery","Avoid in pregnancy and breastfeeding"] },
+    { name:"Red Clover", latin:"Trifolium pratense", part:"Flower", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to support menopausal comfort"],
+      contra:["Avoid with hormone-sensitive cancers or conditions due to phytoestrogen content","Use caution with anticoagulant medications","Avoid in pregnancy and before surgery"] },
+    { name:"Cramp Bark", latin:"Viburnum opulus", part:"Bark", dosage:"1–2 mL, up to 3x daily, or as needed for cramping",
+      benefits:["Traditionally used to ease muscle cramping and menstrual discomfort"],
+      contra:["Use caution with anticoagulant medications","Use caution in known aspirin sensitivity (contains salicin-related compounds)"] },
+    { name:"Feverfew", latin:"Tanacetum parthenium", part:"Leaf", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used to help prevent migraines"],
+      contra:["Avoid in pregnancy — traditionally regarded as a uterine stimulant","Use caution with anticoagulant medications","Avoid with known allergy to Asteraceae/ragweed family","Do not stop abruptly after long-term use — may cause rebound headache"] },
+    { name:"American/Panax Ginseng", latin:"Panax quinquefolius / Panax ginseng", part:"Root", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used as an adaptogen for energy and stress resilience"],
+      contra:["Use caution with anticoagulant medications","May lower blood sugar — use caution with diabetes medications","Avoid with MAOIs and use caution with stimulants; can cause overstimulation or insomnia","Avoid in pregnancy without guidance"] },
+    { name:"Elecampane", latin:"Inula helenium", part:"Root", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease coughs and support respiratory comfort"],
+      contra:["Avoid in pregnancy","Avoid with known allergy to Asteraceae/ragweed family"] },
+    { name:"Horehound", latin:"Marrubium vulgare", part:"Aerial parts", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease coughs and support respiratory comfort"],
+      contra:["High doses may cause irregular heart rhythm or lower blood pressure","Avoid in pregnancy","Use caution with diabetes or heart medications"] },
+    { name:"Lavender", latin:"Lavandula angustifolia", part:"Flower", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to ease anxiety and support relaxation and sleep"],
+      contra:["May potentiate sedative medications","Generally well tolerated internally in small culinary-style doses; use caution with larger internal doses"] },
+    { name:"Rosemary", latin:"Salvia rosmarinus", part:"Leaf", dosage:"0.5–1 mL, up to 3x daily",
+      benefits:["Traditionally used to support digestion, circulation, and mental clarity"],
+      contra:["Avoid therapeutic/concentrated doses in pregnancy","High doses may lower blood sugar or blood pressure — use caution with related medications","Use caution in seizure disorders at high doses"] },
+    { name:"Sage", latin:"Salvia officinalis", part:"Leaf", dosage:"0.5–1 mL, up to 3x daily; short courses",
+      benefits:["Traditionally used to ease sore throat and support digestion; used for menopausal sweating"],
+      contra:["Avoid therapeutic doses in pregnancy and while breastfeeding — may reduce milk supply","Contains thujone — avoid prolonged high-dose use, especially in seizure disorders"] },
+    { name:"Slippery Elm", latin:"Ulmus rubra", part:"Inner bark", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to soothe the digestive tract and throat"],
+      contra:["May slow absorption of other medications taken at the same time — space doses apart","At-risk plant — source sustainably"] },
+    { name:"Marshmallow Root", latin:"Althaea officinalis", part:"Root", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to soothe the digestive tract, throat, and mild cough"],
+      contra:["May slow absorption of other medications taken at the same time — space doses apart","Generally well tolerated otherwise"] },
+    { name:"Burdock Root", latin:"Arctium lappa", part:"Root", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used to support skin health and as a mild digestive bitter"],
+      contra:["Avoid with known allergy to Asteraceae/ragweed family","Use caution in pregnancy — limited safety data","Theoretical mild uterine-stimulant activity"] },
+    { name:"Yellow Dock", latin:"Rumex crispus", part:"Root", dosage:"1–2 mL, up to 3x daily",
+      benefits:["Traditionally used as a mild digestive bitter and to support iron absorption"],
+      contra:["Contains oxalates — use caution with kidney stones or kidney disease","Avoid excessive/prolonged use"] },
+    { name:"Oat Straw / Milky Oats", latin:"Avena sativa", part:"Aerial parts / milky seed", dosage:"1–3 mL, up to 3x daily",
+      benefits:["Traditionally used as a nervine tonic to support stress resilience"],
+      contra:["Avoid in known gluten sensitivity/celiac disease unless certified gluten-free source","Generally well tolerated otherwise"] },
+    { name:"Reishi Mushroom", latin:"Ganoderma lucidum", part:"Fruiting body", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used as an adaptogen to support immune balance and stress resilience"],
+      contra:["Use caution with anticoagulant/antiplatelet medications — may increase bleeding risk","Use caution with immunosuppressant medications or autoimmune conditions","Discontinue before surgery"] },
+    { name:"Schisandra", latin:"Schisandra chinensis", part:"Berry", dosage:"1–2 mL, 1–2x daily",
+      benefits:["Traditionally used as an adaptogen to support liver function and stress resilience"],
+      contra:["Avoid in pregnancy — traditionally regarded as a uterine stimulant","May interact with medications metabolized by the liver (CYP450 interactions)","Use caution with acid reflux — may increase stomach acid"] }
+  ];
+
+  function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); }
+  function uid(){ return 't_' + Date.now() + '_' + Math.random().toString(36).slice(2,8); }
+
+  // ---------- View switching ----------
+  const tabButtons = document.querySelectorAll('nav.tabs button');
+  const sections = document.querySelectorAll('main > section');
+  function showView(id){
+    sections.forEach(s => s.classList.toggle('active', s.id === id));
+    tabButtons.forEach(b => b.classList.toggle('active', b.dataset.view === id));
+    if(id === 'view-labels') refreshLabelSourceOptions();
+    if(id === 'view-list') renderCards();
+  }
+  tabButtons.forEach(b => b.addEventListener('click', () => showView(b.dataset.view)));
+
+  // ---------- Image handling (resize + base64) ----------
+  function resizeImage(file, maxDim){
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          let w = img.width, h = img.height;
+          if(w > h && w > maxDim){ h = Math.round(h * (maxDim/w)); w = maxDim; }
+          else if(h > maxDim){ w = Math.round(w * (maxDim/h)); h = maxDim; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', 0.82));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const imageDrop = document.getElementById('imageDrop');
+  const fInput = document.getElementById('f-images');
+  const imageThumbs = document.getElementById('imageThumbs');
+
+  imageDrop.addEventListener('click', () => fInput.click());
+  imageDrop.addEventListener('dragover', e => { e.preventDefault(); imageDrop.classList.add('dragover'); });
+  imageDrop.addEventListener('dragleave', () => imageDrop.classList.remove('dragover'));
+  imageDrop.addEventListener('drop', e => {
+    e.preventDefault(); imageDrop.classList.remove('dragover');
+    handleFiles(e.dataTransfer.files);
+  });
+  fInput.addEventListener('change', e => handleFiles(e.target.files));
+
+  async function handleFiles(fileList){
+    for(const file of fileList){
+      if(!file.type.startsWith('image/')) continue;
+      const dataUrl = await resizeImage(file, 900);
+      pendingImages.push(dataUrl);
+    }
+    renderImageThumbs();
+  }
+  function renderImageThumbs(){
+    imageThumbs.innerHTML = '';
+    pendingImages.forEach((src, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'thumb-wrap';
+      wrap.innerHTML = `<img src="${src}"><button type="button" class="remove" data-i="${i}">✕</button>`;
+      imageThumbs.appendChild(wrap);
+    });
+    imageThumbs.querySelectorAll('.remove').forEach(btn => {
+      btn.addEventListener('click', () => { pendingImages.splice(+btn.dataset.i, 1); renderImageThumbs(); });
+    });
+  }
+
+  // ---------- Form ----------
+  const form = document.getElementById('tinctureForm');
+  const formHeading = document.getElementById('formHeading');
+  const fields = ['name','latin','plantpart','batch','datecreated','bottled','expiration','yield',
+                   'menstruum','ratio','method','steep','dosage','frequency','usemethod',
+                   'benefits','contra','storage','notes'];
+
+  // ---------- Blend / combination components ----------
+  const blendCheckbox = document.getElementById('f-isblend');
+  const blendSection = document.getElementById('blendSection');
+  const blendRows = document.getElementById('blendRows');
+
+  function addBlendRow(name, proportion){
+    const row = document.createElement('div');
+    row.className = 'blend-row';
+    row.innerHTML = `
+      <input type="text" class="b-name" list="herbNames" placeholder="Herb name" value="${escapeHtml(name||'')}">
+      <input type="text" class="b-prop" placeholder="Proportion (e.g. 2 parts)" value="${escapeHtml(proportion||'')}">
+      <button type="button" class="b-remove" title="Remove">✕</button>`;
+    row.querySelector('.b-remove').addEventListener('click', () => row.remove());
+    blendRows.appendChild(row);
+  }
+
+  blendCheckbox.addEventListener('change', () => {
+    blendSection.style.display = blendCheckbox.checked ? '' : 'none';
+    if(blendCheckbox.checked && !blendRows.children.length){ addBlendRow(); addBlendRow(); }
+  });
+  document.getElementById('addBlendRowBtn').addEventListener('click', () => addBlendRow());
+
+  function getBlendComponents(){
+    return Array.from(blendRows.querySelectorAll('.blend-row')).map(row => ({
+      name: row.querySelector('.b-name').value.trim(),
+      proportion: row.querySelector('.b-prop').value.trim()
+    })).filter(c => c.name);
+  }
+
+  document.getElementById('autofillBlendBtn').addEventListener('click', () => {
+    const components = getBlendComponents();
+    if(!components.length){ autofillStatus.textContent = 'Add at least one herb to the blend first.'; autofillStatus.style.color = '#8b3a3a'; return; }
+    const benefitsEl = document.getElementById('f-benefits');
+    const contraEl = document.getElementById('f-contra');
+    let found = [], missing = [];
+    components.forEach(c => {
+      const herb = findHerb(c.name);
+      if(herb){
+        found.push(herb.name);
+        benefitsEl.value = mergeLines(benefitsEl.value, herb.benefits.map(b => `${herb.name} — ${b}`));
+        contraEl.value = mergeLines(contraEl.value, herb.contra.map(x => `${herb.name} — ${x}`));
+      } else {
+        missing.push(c.name);
+      }
+    });
+    autofillStatus.textContent = found.length
+      ? `✓ Merged reference info for: ${found.join(', ')}.` + (missing.length ? ` No entry found for: ${missing.join(', ')}.` : '')
+      : `No reference entries found for: ${missing.join(', ')}.`;
+    autofillStatus.style.color = found.length ? '#45543a' : '#8b3a3a';
+  });
+
+  function clearForm(){
+    fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) el.value = ''; });
+    document.getElementById('editId').value = '';
+    pendingImages = [];
+    renderImageThumbs();
+    blendCheckbox.checked = false;
+    blendSection.style.display = 'none';
+    blendRows.innerHTML = '';
+    formHeading.textContent = 'Add a New Tincture';
+  }
+
+  document.getElementById('addNewBtn').addEventListener('click', () => { clearForm(); showView('view-form'); });
+  document.getElementById('cancelFormBtn').addEventListener('click', () => { clearForm(); showView('view-list'); });
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('editId').value || uid();
+    const rec = { id, images: pendingImages.slice() };
+    fields.forEach(f => rec[f] = document.getElementById('f-'+f).value.trim());
+    rec.blend = blendCheckbox.checked;
+    rec.components = rec.blend ? getBlendComponents() : [];
+    const idx = records.findIndex(r => r.id === id);
+    if(idx >= 0) records[idx] = rec; else records.push(rec);
+    save();
+    clearForm();
+    showView('view-list');
+  });
+
+  function loadIntoForm(rec){
+    document.getElementById('editId').value = rec.id;
+    fields.forEach(f => { const el = document.getElementById('f-'+f); if(el) el.value = rec[f] || ''; });
+    pendingImages = (rec.images || []).slice();
+    renderImageThumbs();
+    blendRows.innerHTML = '';
+    if(rec.blend && rec.components && rec.components.length){
+      blendCheckbox.checked = true;
+      blendSection.style.display = '';
+      rec.components.forEach(c => addBlendRow(c.name, c.proportion));
+    } else {
+      blendCheckbox.checked = false;
+      blendSection.style.display = 'none';
+    }
+    formHeading.textContent = 'Edit Tincture';
+  }
+
+  // ---------- Herb Reference Library UI ----------
+  const herbNamesDatalist = document.getElementById('herbNames');
+  function refreshHerbDatalist(){
+    herbNamesDatalist.innerHTML = getAllHerbs().map(h => `<option value="${h.name}">`).join('');
+  }
+  refreshHerbDatalist();
+
+  function findHerb(query){
+    const q = (query || '').trim().toLowerCase();
+    if(!q) return null;
+    const all = getAllHerbs();
+    let hit = all.find(h => h.name.toLowerCase() === q || h.latin.toLowerCase() === q);
+    if(!hit) hit = all.find(h => h.name.toLowerCase().includes(q) || q.includes(h.name.toLowerCase()));
+    return hit || null;
+  }
+
+  function mergeLines(existingText, newLines){
+    const existing = linesToList(existingText);
+    const existingLower = existing.map(l => l.toLowerCase());
+    const additions = newLines.filter(l => !existingLower.includes(l.toLowerCase()));
+    return existing.concat(additions).join('\n');
+  }
+
+  function applyHerbToForm(herb){
+    const latinEl = document.getElementById('f-latin');
+    const partEl = document.getElementById('f-plantpart');
+    const benefitsEl = document.getElementById('f-benefits');
+    const contraEl = document.getElementById('f-contra');
+    const dosageEl = document.getElementById('f-dosage');
+
+    if(!latinEl.value.trim()) latinEl.value = herb.latin;
+    if(!partEl.value.trim()) partEl.value = herb.part;
+    if(!dosageEl.value.trim() && herb.dosage) dosageEl.value = herb.dosage;
+    benefitsEl.value = mergeLines(benefitsEl.value, herb.benefits);
+    contraEl.value = mergeLines(contraEl.value, herb.contra);
+  }
+
+  const autofillStatus = document.getElementById('autofillStatus');
+  document.getElementById('autofillBtn').addEventListener('click', () => {
+    const nameVal = document.getElementById('f-name').value;
+    const herb = findHerb(nameVal);
+    if(herb){
+      applyHerbToForm(herb);
+      autofillStatus.textContent = `✓ Filled from reference entry: ${herb.name}`;
+      autofillStatus.style.color = '#45543a';
+    } else {
+      autofillStatus.textContent = `No reference entry found for "${nameVal}". Try Browse Reference Library →`;
+      autofillStatus.style.color = '#8b3a3a';
+    }
+  });
+
+  const herbLibraryOverlay = document.getElementById('herbLibraryOverlay');
+  const herbLibraryList = document.getElementById('herbLibraryList');
+  const herbLibrarySearch = document.getElementById('herbLibrarySearch');
+
+  function renderHerbLibrary(){
+    const q = (herbLibrarySearch.value || '').toLowerCase();
+    const list = getAllHerbs()
+      .filter(h => !q || h.name.toLowerCase().includes(q) || h.latin.toLowerCase().includes(q) || h.benefits.join(' ').toLowerCase().includes(q))
+      .sort((a,b) => a.name.localeCompare(b.name));
+    herbLibraryList.innerHTML = list.map(h => `
+      <div class="herb-lib-item" data-name="${escapeHtml(h.name)}">
+        <span class="hn">${escapeHtml(h.name)}</span><span class="hl">${escapeHtml(h.latin)}</span>
+        ${h.custom ? '<span class="tag" style="margin-left:8px;">Your entry</span>' : ''}
+        ${h.custom ? `<button type="button" class="btn danger small" data-delete="${escapeHtml(h.name)}" style="float:right; padding:3px 10px;">Remove</button>` : ''}
+        <div class="hb">${escapeHtml(h.benefits[0] || '')}</div>
+      </div>`).join('') || '<p class="hint">No matches.</p>';
+    herbLibraryList.querySelectorAll('.herb-lib-item').forEach(item => {
+      item.addEventListener('click', (e) => {
+        if(e.target.closest('[data-delete]')) return;
+        const herb = getAllHerbs().find(h => h.name === item.dataset.name);
+        if(!herb) return;
+        const nameEl = document.getElementById('f-name');
+        if(!nameEl.value.trim()) nameEl.value = herb.name;
+        applyHerbToForm(herb);
+        autofillStatus.textContent = `✓ Filled from reference entry: ${herb.name}`;
+        autofillStatus.style.color = '#45543a';
+        herbLibraryOverlay.classList.remove('active');
+      });
+    });
+    herbLibraryList.querySelectorAll('[data-delete]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nm = btn.dataset.delete;
+        if(!confirm(`Remove "${nm}" from your library? This won't affect any tinctures already saved.`)) return;
+        customHerbs = customHerbs.filter(h => h.name !== nm);
+        saveCustomHerbs();
+        refreshHerbDatalist();
+        renderHerbLibrary();
+      });
+    });
+  }
+  document.getElementById('browseHerbsBtn').addEventListener('click', () => {
+    renderHerbLibrary();
+    herbLibraryOverlay.classList.add('active');
+    herbLibrarySearch.value = '';
+    herbLibrarySearch.focus();
+  });
+  document.getElementById('closeHerbLibraryBtn').addEventListener('click', () => herbLibraryOverlay.classList.remove('active'));
+  herbLibraryOverlay.addEventListener('click', e => { if(e.target === herbLibraryOverlay) herbLibraryOverlay.classList.remove('active'); });
+  herbLibrarySearch.addEventListener('input', renderHerbLibrary);
+
+  // ---------- Add herb to library ----------
+  const addHerbForm = document.getElementById('addHerbForm');
+  const newHerbFieldIds = ['nh-name','nh-latin','nh-part','nh-dosage','nh-benefits','nh-contra'];
+  document.getElementById('showAddHerbBtn').addEventListener('click', () => {
+    addHerbForm.style.display = addHerbForm.style.display === 'none' ? '' : 'none';
+  });
+  document.getElementById('cancelNewHerbBtn').addEventListener('click', () => {
+    newHerbFieldIds.forEach(id => document.getElementById(id).value = '');
+    addHerbForm.style.display = 'none';
+  });
+  document.getElementById('saveNewHerbBtn').addEventListener('click', () => {
+    const name = document.getElementById('nh-name').value.trim();
+    if(!name){ alert('Please enter a common name for the herb.'); return; }
+    const newHerb = {
+      name,
+      latin: document.getElementById('nh-latin').value.trim() || '—',
+      part: document.getElementById('nh-part').value.trim() || '—',
+      dosage: document.getElementById('nh-dosage').value.trim(),
+      benefits: linesToList(document.getElementById('nh-benefits').value),
+      contra: linesToList(document.getElementById('nh-contra').value),
+      custom: true
+    };
+    const existingIdx = customHerbs.findIndex(h => h.name.toLowerCase() === name.toLowerCase());
+    if(existingIdx >= 0) customHerbs[existingIdx] = newHerb; else customHerbs.push(newHerb);
+    saveCustomHerbs();
+    refreshHerbDatalist();
+    newHerbFieldIds.forEach(id => document.getElementById(id).value = '');
+    addHerbForm.style.display = 'none';
+    renderHerbLibrary();
+  });
+
+  // ---------- Cards / list ----------
+  const cardsContainer = document.getElementById('cardsContainer');
+  const emptyState = document.getElementById('emptyState');
+  const searchInput = document.getElementById('searchInput');
+
+  function linesToList(text){
+    return (text || '').split('\n').map(s => s.trim()).filter(Boolean);
+  }
+
+  function renderCards(){
+    const q = (searchInput.value || '').toLowerCase();
+    const filtered = records.filter(r => {
+      if(!q) return true;
+      const componentNames = (r.components || []).map(c => c.name).join(' ');
+      const hay = [r.name, r.plantpart, r.benefits, r.latin, componentNames].join(' ').toLowerCase();
+      return hay.includes(q);
+    }).sort((a,b) => (b.datecreated||'').localeCompare(a.datecreated||''));
+
+    cardsContainer.innerHTML = '';
+    emptyState.style.display = filtered.length ? 'none' : 'block';
+
+    filtered.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const benefitsList = linesToList(r.benefits);
+      const thumbHtml = r.images && r.images.length
+        ? `<img src="${r.images[0]}">`
+        : `<span class="placeholder">🌿</span>`;
+      const blendLine = (r.blend && r.components && r.components.length)
+        ? `<div class="meta">🧪 Blend: ${r.components.map(c => escapeHtml(c.name)).join(' + ')}</div>` : '';
+      card.innerHTML = `
+        <div class="thumb">${thumbHtml}</div>
+        <div class="body">
+          <h3>${escapeHtml(r.name || 'Untitled Tincture')}</h3>
+          ${r.latin ? `<div class="latin">${escapeHtml(r.latin)}</div>` : ''}
+          <div class="meta">${r.datecreated ? 'Started ' + r.datecreated : ''}${r.batch ? ' · Batch ' + escapeHtml(r.batch) : ''}</div>
+          ${blendLine}
+          ${benefitsList.length ? `<div class="benefits-preview">${escapeHtml(benefitsList[0])}${benefitsList.length>1 ? '…' : ''}</div>` : ''}
+        </div>`;
+      card.addEventListener('click', () => openDetail(r.id));
+      cardsContainer.appendChild(card);
+    });
+  }
+  searchInput.addEventListener('input', renderCards);
+
+  function escapeHtml(str){
+    return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------- Detail modal ----------
+  const detailOverlay = document.getElementById('detailOverlay');
+  function openDetail(id){
+    const r = records.find(x => x.id === id);
+    if(!r) return;
+    currentDetailId = id;
+    document.getElementById('d-name').textContent = r.name || 'Untitled Tincture';
+    document.getElementById('d-latin').textContent = r.latin || '';
+    document.getElementById('d-images').innerHTML = (r.images||[]).map(src => `<img src="${src}">`).join('');
+
+    const hasBlend = r.blend && r.components && r.components.length;
+    document.getElementById('d-blend-block').style.display = hasBlend ? '' : 'none';
+    document.getElementById('d-blend').innerHTML = hasBlend
+      ? r.components.map(c => `<span class="tag">${escapeHtml(c.name)}${c.proportion ? ' — ' + escapeHtml(c.proportion) : ''}</span>`).join('')
+      : '';
+
+    const gridRows = [
+      ['Plant Part', r.plantpart], ['Batch #', r.batch],
+      ['Date Started', r.datecreated], ['Bottled', r.bottled],
+      ['Expiration', r.expiration], ['Yield', r.yield],
+      ['Menstruum', r.menstruum], ['Ratio', r.ratio],
+      ['Extraction Method', r.method], ['Steep Duration', r.steep],
+      ['Dosage', r.dosage], ['Frequency', r.frequency],
+      ['Method of Use', r.usemethod]
+    ].filter(([,v]) => v);
+    document.getElementById('d-grid').innerHTML = gridRows.map(([k,v]) =>
+      `<div class="row"><b>${k}:</b> ${escapeHtml(v)}</div>`).join('');
+
+    const benefits = linesToList(r.benefits);
+    document.getElementById('d-benefits-block').style.display = benefits.length ? '' : 'none';
+    document.getElementById('d-benefits').innerHTML = benefits.length
+      ? '<ul>' + benefits.map(b => `<li>${escapeHtml(b)}</li>`).join('') + '</ul>' : '';
+
+    const contra = linesToList(r.contra);
+    document.getElementById('d-contra-block').style.display = contra.length ? '' : 'none';
+    document.getElementById('d-contra').innerHTML = contra.length
+      ? '<ul>' + contra.map(c => `<li>${escapeHtml(c)}</li>`).join('') + '</ul>' : '';
+
+    document.getElementById('d-storage-block').style.display = r.storage ? '' : 'none';
+    document.getElementById('d-storage').textContent = r.storage || '';
+    document.getElementById('d-notes-block').style.display = r.notes ? '' : 'none';
+    document.getElementById('d-notes').textContent = r.notes || '';
+
+    detailOverlay.classList.add('active');
+  }
+  document.getElementById('closeDetailBtn').addEventListener('click', () => detailOverlay.classList.remove('active'));
+  detailOverlay.addEventListener('click', e => { if(e.target === detailOverlay) detailOverlay.classList.remove('active'); });
+
+  document.getElementById('editDetailBtn').addEventListener('click', () => {
+    const r = records.find(x => x.id === currentDetailId);
+    if(!r) return;
+    loadIntoForm(r);
+    detailOverlay.classList.remove('active');
+    showView('view-form');
+  });
+  document.getElementById('deleteDetailBtn').addEventListener('click', () => {
+    if(!confirm('Delete this tincture record? This cannot be undone.')) return;
+    records = records.filter(x => x.id !== currentDetailId);
+    save();
+    detailOverlay.classList.remove('active');
+    renderCards();
+  });
+  document.getElementById('labelFromDetailBtn').addEventListener('click', () => {
+    const id = currentDetailId;
+    detailOverlay.classList.remove('active');
+    showView('view-labels');
+    refreshLabelSourceOptions();
+    document.getElementById('labelSourceSelect').value = id;
+    document.getElementById('labelSourceSelect').dispatchEvent(new Event('change'));
+  });
+
+  // ---------- Label Maker ----------
+  const labelSourceSelect = document.getElementById('labelSourceSelect');
+  function refreshLabelSourceOptions(){
+    const current = labelSourceSelect.value;
+    labelSourceSelect.innerHTML = '<option value="">— Custom / blank label —</option>' +
+      records.map(r => `<option value="${r.id}">${escapeHtml(r.name || 'Untitled')}</option>`).join('');
+    labelSourceSelect.value = current;
+  }
+
+  const shapeButtons = document.querySelectorAll('.shape-choice button');
+  let currentShape = 'shape-bottle';
+  const labelPreview = document.getElementById('labelPreview');
+  shapeButtons.forEach(btn => btn.addEventListener('click', () => {
+    shapeButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentShape = btn.dataset.shape;
+    labelPreview.className = 'tlabel ' + currentShape;
+    updateLabelPreview();
+  }));
+
+  const toggleIds = ['tg-latin','tg-image','tg-blend','tg-date','tg-ratio','tg-dosage','tg-warning'];
+  const customIds = ['c-name','c-latin','c-blendline','c-dateline','c-ratioline','c-dosageline','c-warningline'];
+  [...toggleIds, ...customIds].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateLabelPreview);
+    document.getElementById(id).addEventListener('change', updateLabelPreview);
+  });
+
+  let selectedRecordImage = '';
+  labelSourceSelect.addEventListener('change', () => {
+    const r = records.find(x => x.id === labelSourceSelect.value);
+    if(r){
+      document.getElementById('c-name').value = r.name || '';
+      document.getElementById('c-latin').value = r.latin || '';
+      document.getElementById('c-blendline').value = (r.blend && r.components && r.components.length)
+        ? r.components.map(c => c.proportion ? `${c.name} ${c.proportion}` : c.name).join(', ')
+        : '';
+      const dateBits = [];
+      if(r.datecreated) dateBits.push('Made ' + r.datecreated);
+      if(r.batch) dateBits.push('Batch ' + r.batch);
+      document.getElementById('c-dateline').value = dateBits.join(' · ');
+      const ratioBits = [r.menstruum, r.ratio].filter(Boolean);
+      document.getElementById('c-ratioline').value = ratioBits.join(' · ');
+      const doseBits = [r.dosage, r.frequency].filter(Boolean);
+      document.getElementById('c-dosageline').value = doseBits.join(', ');
+      const contraList = linesToList(r.contra);
+      document.getElementById('c-warningline').value = contraList[0] || '';
+      selectedRecordImage = (r.images && r.images[0]) || '';
+    } else {
+      customIds.forEach(id => document.getElementById(id).value = '');
+      selectedRecordImage = '';
+    }
+    updateLabelPreview();
+  });
+
+  function updateLabelPreview(){
+    const name = document.getElementById('c-name').value || 'Tincture Name';
+    const latin = document.getElementById('c-latin').value;
+    const blendline = document.getElementById('c-blendline').value;
+    const dateline = document.getElementById('c-dateline').value;
+    const ratioline = document.getElementById('c-ratioline').value;
+    const dosageline = document.getElementById('c-dosageline').value;
+    const warningline = document.getElementById('c-warningline').value;
+
+    document.getElementById('lp-name').textContent = name;
+    const latinEl = document.getElementById('lp-latin');
+    latinEl.textContent = latin; latinEl.style.display = (document.getElementById('tg-latin').checked && latin) ? '' : 'none';
+
+    const blendEl = document.getElementById('lp-blend');
+    blendEl.textContent = blendline; blendEl.style.display = (document.getElementById('tg-blend').checked && blendline) ? '' : 'none';
+
+    const dateEl = document.getElementById('lp-date');
+    dateEl.textContent = dateline; dateEl.style.display = (document.getElementById('tg-date').checked && dateline) ? '' : 'none';
+
+    const ratioEl = document.getElementById('lp-ratio');
+    ratioEl.textContent = ratioline; ratioEl.style.display = (document.getElementById('tg-ratio').checked && ratioline) ? '' : 'none';
+
+    const dosageEl = document.getElementById('lp-dosage');
+    dosageEl.textContent = dosageline; dosageEl.style.display = (document.getElementById('tg-dosage').checked && dosageline) ? '' : 'none';
+
+    const warnEl = document.getElementById('lp-warning');
+    warnEl.textContent = warningline ? '⚠ ' + warningline : '';
+    warnEl.style.display = (document.getElementById('tg-warning').checked && warningline) ? '' : 'none';
+
+    let imgEl = labelPreview.querySelector('.plant-img');
+    if(document.getElementById('tg-image').checked && selectedRecordImage){
+      if(!imgEl){ imgEl = document.createElement('img'); imgEl.className='plant-img'; labelPreview.insertBefore(imgEl, labelPreview.firstChild.nextSibling); }
+      imgEl.src = selectedRecordImage; imgEl.style.display='';
+    } else if(imgEl){ imgEl.style.display = 'none'; }
+  }
+  updateLabelPreview();
+
+  // ---------- Print sheet ----------
+  document.getElementById('printLabelsBtn').addEventListener('click', () => {
+    const copies = Math.max(1, Math.min(60, parseInt(document.getElementById('copiesInput').value, 10) || 1));
+    const sheet = document.getElementById('printSheet');
+    sheet.innerHTML = '';
+    for(let i=0; i<copies; i++){
+      const clone = labelPreview.cloneNode(true);
+      sheet.appendChild(clone);
+    }
+    window.print();
+  });
+
+  // ---------- init ----------
+  renderCards();
+  refreshLabelSourceOptions();
+})();
+</script>
+</body>
+</html>
