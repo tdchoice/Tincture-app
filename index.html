@@ -267,6 +267,9 @@
   <section id="view-list" class="active">
     <div class="toolbar">
       <input type="search" id="searchInput" placeholder="Search by name, plant part, or benefit…">
+      <button class="btn ghost small" id="exportBackupBtn" title="Download a backup file of all your tinctures">⬇ Export Backup</button>
+      <button class="btn ghost small" id="importBackupBtn" title="Restore or merge from a backup file">⬆ Import Backup</button>
+      <input type="file" id="importBackupInput" accept="application/json,.json" style="display:none;">
       <button class="btn" id="addNewBtn">+ Add Tincture</button>
     </div>
     <div id="cardsContainer" class="grid-cards"></div>
@@ -604,6 +607,21 @@
     </div>
 
     <div id="herbLibraryList" style="max-height:50vh; overflow-y:auto;"></div>
+  </div>
+</div>
+
+<!-- Import Backup Modal -->
+<div class="modal-overlay" id="importOverlay">
+  <div class="modal" style="max-width:520px;">
+    <button class="close-x" id="closeImportBtn">✕</button>
+    <h2>Import Backup</h2>
+    <p id="importSummary" class="hint" style="font-size:.95em;"></p>
+    <div class="modal-actions" style="flex-wrap:wrap;">
+      <button class="btn secondary" id="importMergeBtn">Merge with current data</button>
+      <button class="btn danger" id="importReplaceBtn">Replace all current data</button>
+      <button class="btn ghost" id="importCancelBtn">Cancel</button>
+    </div>
+    <p class="hint" style="margin-top:14px;">Merge adds tinctures and custom herbs from the backup without touching what's already here (skips exact duplicates). Replace erases everything currently on this device and loads the backup instead — use this when setting up a new device.</p>
   </div>
 </div>
 
@@ -1143,6 +1161,108 @@
     });
   }
   searchInput.addEventListener('input', renderCards);
+
+  // ---------- Backup: Export / Import ----------
+  document.getElementById('exportBackupBtn').addEventListener('click', () => {
+    const payload = {
+      app: 'The Apothecary Ledger',
+      exportedAt: new Date().toISOString(),
+      records: records,
+      customHerbs: customHerbs
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = new Date().toISOString().slice(0,10);
+    a.href = url;
+    a.download = `apothecary-ledger-backup-${stamp}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  });
+
+  const importOverlay = document.getElementById('importOverlay');
+  const importSummary = document.getElementById('importSummary');
+  const importBackupInput = document.getElementById('importBackupInput');
+  let pendingImport = null;
+
+  document.getElementById('importBackupBtn').addEventListener('click', () => importBackupInput.click());
+
+  importBackupInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      let data;
+      try{ data = JSON.parse(ev.target.result); }
+      catch(err){ alert('This file is not valid JSON — could not read it as a backup.'); return; }
+      if(!data || !Array.isArray(data.records)){
+        alert('This doesn\'t look like an Apothecary Ledger backup file (missing tincture records).');
+        return;
+      }
+      pendingImport = {
+        records: data.records || [],
+        customHerbs: Array.isArray(data.customHerbs) ? data.customHerbs : []
+      };
+      importSummary.textContent = `This backup contains ${pendingImport.records.length} tincture${pendingImport.records.length===1?'':'s'} and ${pendingImport.customHerbs.length} custom herb${pendingImport.customHerbs.length===1?'':'s'}` + (data.exportedAt ? ` (exported ${new Date(data.exportedAt).toLocaleDateString()}).` : '.');
+      importOverlay.classList.add('active');
+    };
+    reader.readAsText(file);
+    importBackupInput.value = '';
+  });
+
+  document.getElementById('importCancelBtn').addEventListener('click', () => { importOverlay.classList.remove('active'); pendingImport = null; });
+  document.getElementById('closeImportBtn').addEventListener('click', () => { importOverlay.classList.remove('active'); pendingImport = null; });
+  importOverlay.addEventListener('click', e => { if(e.target === importOverlay){ importOverlay.classList.remove('active'); pendingImport = null; } });
+
+  function finishImport(){
+    save();
+    saveCustomHerbs();
+    refreshHerbDatalist();
+    renderCards();
+    refreshLabelSourceOptions();
+    importOverlay.classList.remove('active');
+    pendingImport = null;
+  }
+
+  document.getElementById('importMergeBtn').addEventListener('click', () => {
+    if(!pendingImport) return;
+    const existingIds = new Set(records.map(r => r.id));
+    let added = 0;
+    pendingImport.records.forEach(r => {
+      if(!r || !r.id){ return; }
+      if(existingIds.has(r.id)){
+        // Same id already present — skip if it looks identical, otherwise import as a new copy
+        const existing = records.find(x => x.id === r.id);
+        if(JSON.stringify(existing) === JSON.stringify(r)) return;
+        r = Object.assign({}, r, { id: uid() });
+      }
+      records.push(r);
+      existingIds.add(r.id);
+      added++;
+    });
+    const existingHerbNames = new Set(customHerbs.map(h => h.name.toLowerCase()));
+    let herbsAdded = 0;
+    pendingImport.customHerbs.forEach(h => {
+      if(h && h.name && !existingHerbNames.has(h.name.toLowerCase())){
+        customHerbs.push(h);
+        existingHerbNames.add(h.name.toLowerCase());
+        herbsAdded++;
+      }
+    });
+    finishImport();
+    alert(`Merged ${added} tincture(s) and ${herbsAdded} custom herb(s) into your ledger.`);
+  });
+
+  document.getElementById('importReplaceBtn').addEventListener('click', () => {
+    if(!pendingImport) return;
+    if(!confirm('This will permanently erase everything currently in your ledger on this device and replace it with the backup. Continue?')) return;
+    records = pendingImport.records.slice();
+    customHerbs = pendingImport.customHerbs.slice();
+    finishImport();
+    alert(`Restored ${records.length} tincture(s) and ${customHerbs.length} custom herb(s) from backup.`);
+  });
 
   function escapeHtml(str){
     return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
